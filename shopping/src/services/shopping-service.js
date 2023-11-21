@@ -7,16 +7,12 @@ class ShoppingService {
     this.repository = new ShoppingRepository();
   }
 
-  async getCart({ _id }) {
-    try {
-      const cartItems = await this.repository.Cart(_id)
+  async GetCart({ _id }) {
 
-      return FormateData(cartItems)
-
-    } catch (err) {
-      throw new APIError("Data Not found", err);
-    }
+    const cartItems = await this.repository.Cart(_id);
+    return FormateData(cartItems);
   }
+
   async PlaceOrder(userInput) {
     const { _id, txnNumber } = userInput;
 
@@ -31,12 +27,8 @@ class ShoppingService {
   }
 
   async GetOrders(customerId) {
-    try {
       const orders = await this.repository.Orders(customerId);
       return FormateData(orders);
-    } catch (err) {
-      throw new APIError("Data Not found", err);
-    }
   }
 
 

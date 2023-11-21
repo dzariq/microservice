@@ -9,87 +9,66 @@ class ShoppingRepository {
     // payment
 
     async Orders(customerId) {
-        try {
-            const orders = await OrderModel.find({ customerId });
-            return orders;
-        } catch (err) {
-            throw APIError('API Error', STATUS_CODES.INTERNAL_ERROR, 'Unable to Find Orders')
-        }
+        console.log(customerId)
+        const orders = await OrderModel.find({ customerId });
+        return orders;
     }
 
-    async Cart(customerId, { }) {
-        try {
-            const cartItems = await CartModel.find({
-                customerId: customerId
-            })
+    async Cart(customerId) {
 
-            if (cartItems) {
-                return cartItems
-            }
+        const cartItems = await CartModel.find({ customerId: customerId });
 
-            throw new Error('Data Not Found')
-        } catch (err) {
-            throw err
+
+        if (cartItems) {
+            return cartItems;
         }
 
+        throw new Error('Data Not found!');
     }
 
     async AddCartItem(customerId, item, qty, isRemove) {
-        try {
-            const cart = await CartModel.findOne({customerId : customerId}).populate(
-                "cart"
-            );
+        // return await CartModel.deleteMany();
 
-            const { _id } = item
+        const cart = await CartModel.findOne({ customerId: customerId })
 
-            if (cart) {
+        const { _id } = item;
 
-                let isExist = false;
+        if (cart) {
 
-                let cartItem = cart.items;
+            let isExist = false;
 
-                let cartItems = profile.cart;
+            let cartItems = cart.items;
 
-                if (cartItems.length > 0) {
 
-                    cartItems.map((item) => {
-                        if (item.product._id.toString() === product._id.toString()) {
-                            if (isRemove) {
-                                cartItems.splice(cartItems.indexOf(item), 1);
-                            } else {
-                                item.unit = qty;
-                            }
-                            isExist = true;
+            if (cartItems.length > 0) {
+
+                cartItems.map(item => {
+
+                    if (item.product._id.toString() === _id.toString()) {
+                        if (isRemove) {
+                            cartItems.splice(cartItems.indexOf(item), 1);
+                        } else {
+                            item.unit = qty;
                         }
-                    });
-
-                    if (!isExist && !isRemove) {
-                        cartItems.push({product: {...item}, unit: qty});
+                        isExist = true;
                     }
-                } else {
-                    return await CartModel.create({
-                        customerId,
-                        items:[{
-                            product : {...item},
-                            unit : qty
-                        }]
-                    })
-                }
-
-                profile.cart = cartItems;
-
-                const cartSaveResult = await profile.save();
-
-                return cartSaveResult.cart;
+                });
             }
 
-            throw new Error("Unable to add to cart!");
-        } catch (err) {
-            throw new APIError(
-                "API Error",
-                STATUS_CODES.INTERNAL_ERROR,
-                "Unable to Create Customer"
-            );
+            if (!isExist && !isRemove) {
+                cartItems.push({ product: { ...item }, unit: qty });
+            }
+
+            cart.items = cartItems;
+
+            return await cart.save()
+
+        } else {
+
+            return await CartModel.create({
+                customerId,
+                items: [{ product: { ...item }, unit: qty }]
+            })
         }
     }
 
@@ -99,7 +78,7 @@ class ShoppingRepository {
         //check transaction for payment Status
 
         try {
-            const cart = await CartModel.findOne({customerId: customerId});
+            const cart = await CartModel.findOne({ customerId: customerId });
 
             if (cart) {
 

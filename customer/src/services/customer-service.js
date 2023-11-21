@@ -121,6 +121,7 @@ class CustomerService {
     }
 
     async ManageCart(customerId, product, qty, isRemove) {
+        console.log(customerId);
         try {
             const cartResult = await this.repository.AddCartItem(customerId, product, qty, isRemove);
             return FormateData(cartResult);
@@ -139,10 +140,17 @@ class CustomerService {
     }
 
     async SubscribeEvents(payload) {
-        const { event, data } = payload;
 
+        console.log('Triggering.... Customer Events')
+
+        console.log(payload)
+
+        const { event, data } = payload;
+        console.log(event)
 
         const { userId, product, order, qty } = data;
+        console.log(userId)
+        console.log(product)
 
         switch (event) {
             case 'ADD_TO_WISHLIST':

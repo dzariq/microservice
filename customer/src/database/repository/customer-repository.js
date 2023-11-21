@@ -135,11 +135,7 @@ class CustomerRepository {
 
       return profileResult.wishlist;
     } catch (err) {
-      throw new APIError(
-        "API Error",
-        STATUS_CODES.INTERNAL_ERROR,
-        "Unable to Add to WishList"
-      );
+      console.log(err)
     }
   }
 
@@ -160,7 +156,7 @@ class CustomerRepository {
         if (cartItems.length > 0) {
           let isExist = false;
           cartItems.map((item) => {
-            if (item.product._id.toString() === product._id.toString()) {
+            if (item.product._id.toString() === _id.toString()) {
               if (isRemove) {
                 cartItems.splice(cartItems.indexOf(item), 1);
               } else {
@@ -186,11 +182,7 @@ class CustomerRepository {
 
       throw new Error("Unable to add to cart!");
     } catch (err) {
-      throw new APIError(
-        "API Error",
-        STATUS_CODES.INTERNAL_ERROR,
-        "Unable to Create Customer"
-      );
+      console.log(err)
     }
   }
 
